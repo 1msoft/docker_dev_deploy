@@ -5,22 +5,26 @@
  + redis
  
  ## 命令别名
- 让别名发挥作用: 在本目录下执行:source .bashrc
+ 让别名有效: 在本目录下执行:source .bashrc
    
- 或者: 在~/.bashrc(linux) ~/bash_profile中执行目录下的.bashrc 
-   
-   
+ 永久有效方式  
+ (linux): 在~/.bashrc(linux)加入  
  + alias fig="docker-compose"
- + alias dms="docker-machine-use"
- + alias dme='docker-machine-env'
  + alias vmmysql="docker exec -it vm_mysql_1 mysql -uroot -pemsoft"
  + alias vmmongo="docker exec -it vm_mongo_1 mongo"
+ 
+ (mac) ~/bash_profile中执行目录下的.bashrc  
+ ```
+ if [ -f ~/youpath/vm/.bashrc ]; then
+   source ~/youpath/vm/.bashrc
+ ```
+
  
  ## 第一次启动
  fig up -d
  
  ## 开机启动或停止服务
- 1. dms default (mac only)
+ 1. dms default (mac only, start virtualbox and docker host)
  2. fig [start|stop] [mysql|mongo|ridis]
  
  ## 缺省参数
