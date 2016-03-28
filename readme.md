@@ -18,7 +18,15 @@
  if [ -f ~/youpath/vm/.bashrc ]; then
    source ~/youpath/vm/.bashrc
  ```
-
+ ## service_name && full_service_name
+ service_name 对fig命令有效,分别是mysql, mongo, redis.  
+ full_service_name 由fig up 命令自动创建服务时产生, 对docker 命令有效.
+ fig ps 可以查看full_service_name
+ 
+ ## 数据盘和配置文件
+ 数据放在数据volume中, 删除服务也不会丢失数据, 若需要重置数据需要删除数据volume. 
+ 配置文件位于config目录下, mysql配置文件为config/mysql/my.cnf
+ 
  
  ## 第一次启动
  fig up -d
