@@ -1,0 +1,44 @@
+version: '2'
+
+volumes:
+    mysql-data:
+        driver: local
+    mongo-data:
+        driver: local
+
+networks:
+    brid_network:
+        driver: bridge
+    
+services:
+    mysql:
+        image: mysql:5.7
+        environment:
+            MYSQL_DATABASE: test
+            MYSQL_USER: emsoft
+            MYSQL_PASSWORD: emsoft
+            MYSQL_ROOT_PASSWORD: emsoft
+        volumes:
+            # Using a custom MySQL configuration file
+            - ./config/mysql:/etc/mysql/conf.d
+            # Create a data directory on the host system (outside the container)
+            - mysql-data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        networks:
+            - brid_network
+
+    redis:
+        image: redis:3.0
+        ports:
+            - "6379:6379"
+        networks:
+            - brid_network
+    mongo:
+        image: mongo:3.2
+        volumes:
+            - mongo-data:/data/db
+        ports:
+            - "27017:27017"
+        networks:
+            - brid_network
