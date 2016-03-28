@@ -5,6 +5,11 @@
  + redis
  
  ## 命令别名
+ 让别名发挥作用: 在本目录下执行:source .bashrc
+   
+ 或者: 在~/.bashrc(linux) ~/bash_profile中执行目录下的.bashrc 
+   
+   
  + alias fig="docker-compose"
  + alias dms="docker-machine-use"
  + alias dme='docker-machine-env'
