@@ -33,9 +33,8 @@ docker-machine-use() {
     docker-machine-env $1
 }
 
-alias fig = "docker-compose"
-alias dms = "docker-machine-start"
-alias dme = 'docker-machine-env'
-alias dsh = "docker exec -it $1 bash"
-alias dmysql = "docker exec -it $1 mysql -uroot -pemsoft"
-alias dmongo = "docker exec -it $1 mongo"
+alias fig="docker-compose"
+alias dms="docker-machine-use"
+alias dme='docker-machine-env'
+alias vmmysql="docker exec -it vm_mysql_1 mysql -uroot -pemsoft"
+alias vmmongo="docker exec -it vm_mongo_1 mongo"
