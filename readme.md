@@ -1,55 +1,88 @@
-本项目用于在开发环境提供docker方式的服务,包括:
+本项目用于指导如何在项目开发和部署中合理使用Docker, 包括以下内容:
++ 如何理解Docker
++ 在开发中如何使用Docker
++ 如何规划docker镜像
++ 数据卷和共享目录
++ 在主机和容器之间拷贝文件
++ 使用环境变量还是配置文件
++ 单机部署和运维
++ 如何屏蔽Host部署和docker部署的差异性.
++ 常用命令, 别名及脚本
   
- + mysql
- + mongo
- + redis
+## 如何理解Docker
+1. 不是虚机
+  尽管docker几乎包含了完整的操作系统, 实际上未包含linux内核, docker 容器中的应用使用主机的linux内核. 使用者最直观的体验是启动一个容器和启动一个服务进程差不多.
+2. 不是进程
+  从三个方面来看,容器不是进程. 首先, 在容器中可以启动一系列进程,因此容器大于进程. 其次, 在容器中不仅包括需要运行的进程, 还包括所有的支持环境. 最后在容器中有两种进程, 一种是提供服务的主进程, 另一种则是通过docker exec命令执行的辅助进程. docker对待两种进程的处理方式是不一样的. 
+3. 基于增量的主机文件系统
+  容器的image存储在主机的文件系统上, 但一个image并不对应一个文件, 而是一些文件块的组合. 因此, 当本地已经有python的镜像时, 再pulldjango镜像时, 将不再pull和python镜像相同的那部分文件块.
  
- ## 命令别名
- 让别名有效: 在本目录下执行:source .bashrc
-   
- 永久有效方式  
- (linux): 在~/.bashrc(linux)加入  
- + alias fig="docker-compose"
- + alias vmmysql="docker exec -it vm_mysql_1 mysql -uroot -pemsoft"
- + alias vmmongo="docker exec -it vm_mongo_1 mongo"
- 
- (mac) ~/bash_profile中执行目录下的.bashrc  
- ```
- if [ -f ~/youpath/vm/.bashrc ]; then
-   source ~/youpath/vm/.bashrc
- ```
- ## service_name && full_service_name
- service_name 对fig命令有效,分别是mysql, mongo, redis.  
- full_service_name 由fig up 命令自动创建服务时产生, 对docker 命令有效.
- fig ps 可以查看full_service_name
- 
- ## 数据盘和配置文件
- 数据放在数据volume中, 删除服务也不会丢失数据, 若需要重置数据需要删除数据volume. 
- 配置文件位于config目录下, mysql配置文件为config/mysql/my.cnf
- 
- 
- ## 第一次启动
- fig up -d
- 
- ## 开机启动或停止服务
- 1. dms default (mac only, start virtualbox and docker host)
- 2. fig [start|stop] [mysql|mongo|ridis]
- 
- ## 缺省参数
- + ip地址:mac一般为192.168.99.100, linux即为本机
- + 端口均为缺省端口
- + mysql 密码为emsoft ,缺省建立test数据库和emsoft用户名
- + mongo 无密码方式
- 
- ## 常用命令
+## 在开发中如何使用Docker
+1. 使用Docker提供mysql, mongo等服务
+  改用docker服务, 可以简化安装,并且支持多版本
+  
+2. 使用docker 发布集成测试镜像
+  使用docker发布测试镜像, 有利于避免在开发环境下测试不彻底或不能重现bug等问题.
+  
+3. 开发中应用是否docker
+  docker用于开发可以有效的封装不同项目环境的差异性, 但是若需要使用代码提示, 自动完成, 在线调试等功能, 就不是很适合用docker了. 
+  更有效的做法是:
+    + 在python中使用virtualenv, 在项目目录下建立env.
+    + 在node项目中使用n 或 nvm.
+    + 项目依赖包, 安装在项目目录中.
 
+## 如何规划docker镜像
+一个应用一个镜像, 还是多个应用一个镜像? 需要根据应用类型, 应用相关性来综合考虑. 一般来说坚持以下原则:
+  + 不同类型应用使用不同的镜像, 如python应用和node应用应放置在不同容器里.
+  + 相互依赖的同类应用, 且可以通过不同的启动命令在同一份拷贝上实现不同类型服务的应用可以打包在同一个docker镜像中.
+  + 不要把mysql这样的公共服务打包在应用镜像里.
+  + 不要盲目按微服务规则, 将应用拆分成多个容器, 能合并则合并.
+  + 注意控制镜像的大小, 删除不必要的软件组件.
+  
+## 数据卷和本地共享目录
+使用数据卷替代本地共享目录可以解决以下问题:
+  1. mac和win系统共享目录存在的问题
+  2. selinux中的安全设置
+  3. 便于以后迁移到分布式存储中
+  
+## 在主机和容器之间拷贝文件
+  1. 使用docker cp 命令 替代文件夹挂载来实现简单的文件拷贝工作
+  2. 备份打包可以使用 ssh $container_ip "tar -cv $folder" > /tmp/$filename.tar
+  3. 需要注意:从主机拷贝文件到容器, 在容器升级后该文件在新容器里不存在. 且不利于镜像的版本管理.
+
+## 使用环境变量还是配置文件
+  1. 环境变量在创建容器时赋值, 在之后的容器重新启动后依然存在且不可改变. 适合用于和运行环境相关的配置.
+  2. 配置文件被应用程序读取, 修改后容器重启后, 对应配置也改变. 适合用于用户参数配置.
+  3. 配置文件最好不要拷贝到容器, 而是采用volume 或 volume file 映射到主机或数据卷对应目录.
+
+## 单机部署和运维
+1. 使用docker-compose部署
+2. 使用docker exec/cp 等命令进行运维  
+
+## 常用命令, 别名及脚本
+
+ ### 命令别名
+ 参见scripts/.bashrc_xxx
+  + dme $dm_name: 设置mac的docker环境变量
+  + dms $dm_name: 启动mac主机上的docker-machine, 并设置环境变量
+  + fig : docker-compose
+
+ ### 常用命令
+ + fig -p $prefix_name up 按$prefix_name创建容器服务. 例如 prefix_name = dev时, mysql容器的全称为 dev_mysql_1
  + fig ps 查看运行中的服务(full_service_name)
  + fig logs [service-name] 查看服务的日志.
- + docker start|stop full_service_name 等同 fig start|stop service_name
- + docker exec -it full_service_name [bash|mysql|...]进入容器.
+ + docker start|stop 容器全称 等同 fig start|stop 服务名
+ + docker exec -it 容器全称 [bash|mysql|...]进入容器.
  
- ## 常见问题
- + 有多个mysql/mongo服务启动端口冲突: 用一个服务,或多个服务用不同的端口映射
- + 每个人项目服务IP地址不同,导致git冲突, 项目从环境变量或私有的配置文件中读取信息.
- + fig命令未发现yml配置文件: 到文件所在目录运行,或者使用docker命令替代运行.
+### 常用脚本
+
+ 
+ 
+
+
+ 
+## 常见问题
++ 有多个mysql/mongo服务启动端口冲突: 用一个服务,或多个服务用不同的端口映射
++ 每个人项目服务IP地址不同,导致git冲突, 项目从环境变量或私有的配置文件中读取信息.
++ fig命令未发现yml配置文件: 到文件所在目录运行,或者使用docker命令替代运行.
  

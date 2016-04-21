@@ -1,11 +1,11 @@
 version: '2'
 
 volumes:
-    mysql-data:
+    mysql_data:
         driver: local
-    mongo-data:
+    mongo_data:
         driver: local
-
+    mysql_config: ./config/mysql
 networks:
     brid_network:
         driver: bridge
@@ -21,9 +21,9 @@ services:
             MYSQL_ROOT_PASSWORD: emsoft
         volumes:
             # Using a custom MySQL configuration file
-            - ./config/mysql:/etc/mysql/conf.d
+            - mysql_config:/etc/mysql/conf.d
             # Create a data directory on the host system (outside the container)
-            - mysql-data:/var/lib/mysql
+            - mysql_data:/var/lib/mysql
         ports:
             - "3306:3306"
         networks:
@@ -38,7 +38,7 @@ services:
     mongo:
         image: mongo:3.2
         volumes:
-            - mongo-data:/data/db
+            - mongo_data:/data/db
         ports:
             - "27017:27017"
         networks:
