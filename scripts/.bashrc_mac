@@ -36,5 +36,4 @@ docker-machine-use() {
 alias fig="docker-compose"
 alias dms="docker-machine-use"
 alias dme='docker-machine-env'
-alias vmmysql="docker exec -it vm_mysql_1 mysql -uroot -pemsoft"
-alias vmmongo="docker exec -it vm_mongo_1 mongo"
+
