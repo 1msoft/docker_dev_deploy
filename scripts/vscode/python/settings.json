@@ -1,0 +1,11 @@
+// 复制到项目目录的.vscode目录下
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/*.pyc":true
+    },
+    "editor.wrappingColumn": 100,
+    "python.pythonPath": "${workspaceRoot}/.env/bin/python",
+    "python.linting.pylintPath": "pylint --load-plugins pylint-django"
+}

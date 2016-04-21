@@ -1,0 +1,53 @@
+// 复制到项目目录的.vscode目录下
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "program": "${file}",
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ]
+        },
+        {
+            "name": "Python Console App",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "program": "${file}",
+            "externalConsole": true,
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit"
+            ]
+        },
+        {
+            "name": "Django",
+            "type": "python",
+            "pythonPath":"${workspaceRoot}/.env/bin/python",
+            "request": "launch",
+            "stopOnEntry": true,
+            "program": "${workspaceRoot}/manage.py",
+            "args": [
+                "runserver",
+                "--noreload"
+            ],
+            "env": {
+                "DATABASE_HOST":"192.168.99.100",
+                "MONGO_HOST":"192.168.99.100",
+                "REDIS_HOST":"192.168.99.100"
+            },
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput",
+                "DjangoDebugging"
+            ]
+        }
+    ]
+}
