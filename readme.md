@@ -5,22 +5,34 @@
  + redis
  
  ## 命令别名
- 让别名发挥作用: 在本目录下执行:source .bashrc
+ 让别名有效: 在本目录下执行:source .bashrc
    
- 或者: 在~/.bashrc(linux) ~/bash_profile中执行目录下的.bashrc 
-   
-   
+ 永久有效方式  
+ (linux): 在~/.bashrc(linux)加入  
  + alias fig="docker-compose"
- + alias dms="docker-machine-use"
- + alias dme='docker-machine-env'
  + alias vmmysql="docker exec -it vm_mysql_1 mysql -uroot -pemsoft"
  + alias vmmongo="docker exec -it vm_mongo_1 mongo"
+ 
+ (mac) ~/bash_profile中执行目录下的.bashrc  
+ ```
+ if [ -f ~/youpath/vm/.bashrc ]; then
+   source ~/youpath/vm/.bashrc
+ ```
+ ## service_name && full_service_name
+ service_name 对fig命令有效,分别是mysql, mongo, redis.  
+ full_service_name 由fig up 命令自动创建服务时产生, 对docker 命令有效.
+ fig ps 可以查看full_service_name
+ 
+ ## 数据盘和配置文件
+ 数据放在数据volume中, 删除服务也不会丢失数据, 若需要重置数据需要删除数据volume. 
+ 配置文件位于config目录下, mysql配置文件为config/mysql/my.cnf
+ 
  
  ## 第一次启动
  fig up -d
  
  ## 开机启动或停止服务
- 1. dms default (mac only)
+ 1. dms default (mac only, start virtualbox and docker host)
  2. fig [start|stop] [mysql|mongo|ridis]
  
  ## 缺省参数
